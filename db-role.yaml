@@ -1,0 +1,7 @@
+- name: DB role
+  hosts: DB
+  become: yes
+  vars_files: 
+  - roles/db-creds.yaml # create an file using ansible-vault
+  roles:
+  - DB

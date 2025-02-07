@@ -1,0 +1,35 @@
+- name: Install nginx
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+# - name: remove the whole content from nginx directory
+#   ansible.builtin.command: rm -rf /var/www/*
+
+# - name: remove the default.conf
+#   ansible.builtin.command: rm -rf /etc/nginx/sites-available/default
+
+# - name: Download the frontend code
+#   ansible.builtin.unarchive:
+#     src: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
+#     dest: /var/www/
+#     remote_src: yes
+
+- name: common tasks
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: app-FE.yaml
+
+# - name: copy an nginx config file to nginx default location
+#   ansible.builtin.copy: # it will check in files folder
+#     src: expense.conf
+#     dest: /etc/nginx/sites-available/default
+#   notify: Restart Nginx
+
+- name: copy an nginx config file to nginx default location
+  ansible.builtin.template: # it will check in templates folder
+    src: expense.j2  
+    dest: /etc/nginx/sites-available/default
+  notify: Restart Nginx
+

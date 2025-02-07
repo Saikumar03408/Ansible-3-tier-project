@@ -1,0 +1,22 @@
+- name: Delete an Directory
+  ansible.builtin.file:
+    path: "{{ path }}"
+    state: absent
+- name: create an Directory for application
+  ansible.builtin.file:
+    path: "{{ path }}"
+    state: directory
+#- name: Download backend code into project Directory
+#  ansible.builtin.get_url:
+#    url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+#    dest: /tmp
+- name: Unarchive a {{ component }} file 
+  ansible.builtin.unarchive:
+    src: https://expense-builds.s3.us-east-1.amazonaws.com/expense-{{ component }}-v2.zip
+    dest: "{{ path }}"
+    remote_src: yes # if you give then only it will check in remote server. otherwise it will check in local machine
+- name: install the npm dependencies
+  ansible.builtin.command: npm install
+  args:
+    chdir: "{{ path }}"
+  notify: Restart backend

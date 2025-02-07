@@ -1,0 +1,41 @@
+- name: Download the nodejs 20 package
+  ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+- name: install the nodeje
+  ansible.builtin.package:
+    name:
+      - nodejs
+      - unzip
+      - mysql-client
+      - net-tools
+      - python3-pip
+      - python3-pymysql
+    state: present
+- name: create an user for expense project
+  ansible.builtin.user:
+    name: expense
+    create_home: yes
+- name: common tasks
+  ansible.builtin.import_role:
+    name: common
+    task_from: app-pre.yaml
+- name: create the DB and collection in mysql
+  #ansible.builtin.command: mysql -h 172.31.34.66 -u root -pExpenseApp@1 < /app/schema/backend.sql
+  community.mysql.mysql_db:
+    state: import
+    name: transactions
+    target: /app/schema/backend.sql
+    login_user: "{{ login_user }}"
+    login_password: "{{ login_password }}"
+    login_host: "{{ login_host }}"
+# - name: Copy the backend file 
+#   ansible.builtin.copy:  # if you give copy here, it will check in files folder
+#     src: backend.service
+#     dest: /etc/systemd/system/
+- name: Copy the backend file
+  ansible.builtin.template: # if you give template here, it will check in templates folder
+    src: backend.j2
+    dest: /etc/systemd/system/
+
+ 
+

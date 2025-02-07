@@ -1,0 +1,5 @@
+packages:
+  - nginx
+  - unzip
+FE_component: frontend
+backend_host: 172.31.46.134

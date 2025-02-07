@@ -1,0 +1,37 @@
+- name: install mysql
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+    update_cache: true # this is equivalent to apt-get update
+  loop: "{{ packages }}"
+- name: Ensure the default Apache port is 8080
+  ansible.builtin.lineinfile:
+    path:  /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address.*'
+    line: bind-address=0.0.0.0
+  notify: Restart mysql
+- name: install pip
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+  register: pip_info
+- name: install pymysql
+  ansible.builtin.command: apt-get install python3-pymysql -y
+  when: pip_info.failed == false
+- name: Get MySQL details
+  community.mysql.mysql_info:
+    login_user: "{{ login_user }}"
+    login_password: "{{ login_password }}"
+    login_host: "{{ login_host }}"
+  register: mysql_info
+  ignore_errors: true
+- name: update the password
+  community.mysql.mysql_user:
+    name: "root"  # username
+    password: "{{ login_password }}"
+      #login_host: "{{ login_host }}"
+    priv: '*.*:ALL,GRANT'
+    host: "%"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock # this will allow us to connect mysql when it is running on 127.0.0.1 instead of 0.0.0.0
+    #update_password: always

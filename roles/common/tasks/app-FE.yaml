@@ -1,0 +1,11 @@
+- name: remove the whole content from nginx directory
+  ansible.builtin.command: rm -rf /var/www/*
+
+- name: remove the default.conf
+  ansible.builtin.command: rm -rf /etc/nginx/sites-available/default
+
+- name: Download the {{ FE_component }} code
+  ansible.builtin.unarchive:
+    src: https://expense-builds.s3.us-east-1.amazonaws.com/expense-{{ FE_component }}-v2.zip
+    dest: /var/www/
+    remote_src: yes

@@ -1,0 +1,5 @@
+- name: BE role
+  hosts: BE
+  become: yes
+  roles:
+  - BE
