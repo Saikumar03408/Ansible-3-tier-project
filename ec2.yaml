@@ -1,0 +1,30 @@
+- name: Create an 3 Ec2 instances
+  hosts: localhost
+  vars:
+   region: "ap-southeast-1"
+   access_key: ""
+   secret_key: ""
+   key_name: "kubeadm"
+   subnet_id: "subnet-0df84a2d4ef9976fb"
+   sg_id: "sg-037d1179e1eff8a8e"
+   instance_type: "t2.micro"
+   AMI: "ami-0672fd5b9210aa093"
+   instances:
+    - DB
+    - FE
+    - BE
+  tasks:
+    - name: start an instance with a public IP address
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        access_key: "{{ access_key }}"
+        secret_key: "{{ secret_key }}"
+        name: "{{ item }}"
+        key_name: "{{ key_name }}"
+        vpc_subnet_id: "{{ subnet_id }}"
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ sg_id }}"
+        image_id: "{{ AMI }}"
+        tags:
+          Environment: DEV
+      loop: "{{ instances }}"
